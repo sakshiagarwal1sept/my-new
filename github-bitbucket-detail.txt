@@ -1,0 +1,51 @@
+sakshiagarwal@startbitsolutions.com
+shivshiva123
+
+git pull https://github.com/sakshiagarwal1sept/mahanet.git sakshi
+git remote add origin https://github.com/sakshiagarwal1sept/mahanet.git
+git clone https://github.com/sakshiagarwal1sept/mahanet.git mahanet-demo
+
+
+git clone https://sakshiagarwal1sept@bitbucket.org/sakshiagarwal1sept/mahanet.git
+git remote add origin https://sakshiagarwal1sept@bitbucket.org/sakshiagarwal1sept/mahanet.git
+
+/Desktop/git-folder
+
+git init
+
+git remote add origin "URL"
+
+
+git add -A
+
+git commit -m "MSG"
+
+git push origin master
+
+git pull https://sakshiagarwal1sept@bitbucket.org/sakshiagarwal1sept/mahanet.git master
+
+Github command 
+https://confluence.atlassian.com/bitbucketserver/basic-git-commands-776639767.html
+
+ add, commit, push, pull, clone, create new brench, status, all brench check, for github
+ add, commit, push, pull, create new brench for Bitbucket
+
+
+git remote add origin https://svn.riouxsvn.com/mahanet
+
+svn init
+
+svn add mahanet-fullbackup-1aug.zip
+
+svn checkout https://svn.riouxsvn.com/mahanet
+
+svn add demo.txt
+svn commit -m"your comment"
+svn info
+
+
+svn cp -m https://svn.riouxsvn.com/mahanet/branches/TEST
+svn cp https://svn.riouxsvn.com/mahanet/branches/TEST
+
+svn copy -m "LogMessage" https://svn.riouxsvn.com/mahanet/branches/TEST
+
