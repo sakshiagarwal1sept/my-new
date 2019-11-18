@@ -1,0 +1,182 @@
+github
+sakshiagarwal@startbitsolutions.com
+shivshiva123
+
+//Submenu create
+function xml_page(){
+    $parent_slug = 'xml data reader';
+    $capability = 'manage_options';
+    add_menu_page( 'add url', 'Xml Data Reader', $capability, 'xml_data', 'xml_data_settings','dashicons-welcome-view-site', 20); 
+      add_submenu_page( 'xml_data', 'XML Data Redaer', 'All Counts', $capability, 'all_click', 'click_count');
+      add_submenu_page( 'xml_data', 'Single Count', '', $capability, 'single_count', 'single_count');
+   
+ }
+ add_action('admin_menu', 'xml_page');
+
+//import script and style
+wp_enqueue_style( 'boot-css', 'http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css',   false );
+
+//read XMl data using API
+ $xmlString = $_POST['urlname'];
+	  set_time_limit(0);
+	   $filename=date('d-m-Y').'-dssadsada';
+	  $fp = fopen(WP_CONTENT_DIR.'/plugins/xml-data/xml/'.$filename.'.xml', 'w+');
+	  $ch = curl_init($xmlString);// or any url you can pass which gives you the xml file
+	  curl_setopt($ch, CURLOPT_TIMEOUT, 50);
+	  curl_setopt($ch, CURLOPT_FILE, $fp);
+	  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	  curl_exec($ch);
+	  curl_close($ch);
+	  fclose($fp);
+	  
+    //fetch xmg tags data
+   $xml = simplexml_load_file(WP_CONTENT_DIR.'/plugins/xml-data/xml/'.$filename.'.xml') or die("Error: Cannot create object");
+
+
+//ajax calling
+jQuery("select").change(function(){
+         var  ajaxurl = "<?php echo home_url(); ?>/wp-admin/admin-ajax.php";
+         var data = {
+        'action': 'autosave_form',
+         'fieldvalue':$(this).children("option:selected").val(),
+         'fieldname':$(this).attr("name"),
+         'type' : 'POST',
+         'userid': "<?php echo $checkoutuserid; ?>",
+         'orderid':"<?php echo $orderrcvid; ?>",
+         'datatype': 'json',
+     };
+    jQuery.post(
+         ajaxurl, data, function(response) { 
+         
+     });
+    });
+
+//normal API calling
+$token ="";
+       $ch = curl_init('https://api.com/'); 
+       $post = json_encode($data);
+       $authorization = "Authorization: ApiKey ".$token; 
+       curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization ));
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+       curl_setopt($ch, CURLOPT_POST, 1);
+       curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+       $result = curl_exec($ch);
+       curl_close($ch);
+       $res = json_decode($result); 
+
+// add custom media
+
+  
+
+require_once( ABSPATH . 'wp-admin/includes/image.php' );
+require_once( ABSPATH . 'wp-admin/includes/file.php' );
+require_once( ABSPATH . 'wp-admin/includes/media.php' );
+
+
+$files = $_FILES['customupload'];
+$files1 = $_FILES['driverlicenace'];
+
+$namechange1 = explode('.', $files['name']);
+$namechange2 = explode('.', $files1['name']);
+
+$filenamenew = 'headshot-'.date ("Y-m-d-H:i:s").'.'.$namechange1[1];
+$filenamenew1 = 'driver-license-'.date ("Y-m-d-H:i:s").'.'.$namechange2[1];
+
+$file = array(
+'name' => $filenamenew,
+'type' => $files['type'],
+'tmp_name' => $files['tmp_name'],
+'error' => $files['error'],
+'size' => $files['size']
+);
+
+$file1 = array(
+'name' => $filenamenew1,
+'type' => $files1['type'],
+'tmp_name' => $files1['tmp_name'],
+'error' => $files1['error'],
+'size' => $files1['size']
+);
+
+
+$upload_overrides = array( 'test_form' => false );
+$upload = wp_handle_upload($file, $upload_overrides);
+//driver licenace
+$upload_overrides1 = array( 'test_form' => false );
+$upload1 = wp_handle_upload($file1, $upload_overrides1);
+
+// $filename should be the path to a file in the upload directory.
+$filename = $upload['file'];
+
+//driver licenace
+$filename1 = $upload1['file'];
+
+// The ID of the post this attachment is for.
+$parent_post_id = $post_id;
+$parent_post_id1 = $post_id;
+
+// Check the type of tile. We'll use this as the 'post_mime_type'.
+$filetype = wp_check_filetype( basename( $filename ), null );
+$filetype1 = wp_check_filetype( basename( $filename1 ), null );
+
+// Get the path to the upload directory.
+ $wp_upload_dir = wp_upload_dir();
+$explodeurl = explode('wp-content',$wp_upload_dir['url']);
+
+// Prepare an array of post data for the attachment.
+$attachment = array(
+'guid' => $wp_upload_dir['url'] . '/' . basename( $filename ), 
+'post_mime_type' => $filetype['type'],
+'post_title' => preg_replace( '/\.[^.]+$/', '', basename( $filename ) ),
+'post_content' => $order_id,
+'post_status' => 'inherit'
+);
+$attachment1 = array(
+'guid' => $wp_upload_dir['url'] . '/' . basename( $filename1 ), 
+'post_mime_type' => $filetype['type'],
+'post_title' => preg_replace( '/\.[^.]+$/', '', basename( $filename1 ) ),
+'post_content' => $order_id,
+'post_status' => 'inherit'
+);
+
+// Insert the attachment.
+$attach_id = wp_insert_attachment( $attachment, $filename, $parent_post_id );
+$attach_id1 = wp_insert_attachment( $attachment1, $filename1, $parent_post_id1 );
+
+// Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+// Generate the metadata for the attachment, and update the database record.
+$attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+$attach_data1 = wp_generate_attachment_metadata( $attach_id1, $filename1 );
+
+wp_update_attachment_metadata( $attach_id1, $attach_data1 );
+wp_update_attachment_metadata( $attach_id, $attach_data );
+
+
+    $attachemnt11 = home_url().'/wp-content'.$explodeurl[1]. '/' . basename( $filename );
+   $attachemnt21 = home_url().'/wp-content'.$explodeurl[1]. '/' . basename( $filename1 );
+
+ $attachemnt1 = WP_CONTENT_DIR.''.$explodeurl[1]. '/' . basename( $filename );
+  $attachemnt2 = WP_CONTENT_DIR.''.$explodeurl[1]. '/' . basename( $filename1 );
+
+
+//add datepicker
+>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+ <script>
+  jQuery( function() {
+    jQuery( ".datepicker" ).datepicker({dateFormat: 'yy-mm-dd', changeMonth: true,
+    changeYear: true,  maxDate: "-0M -0D -18Y", yearRange: "-60:-13" });
+  } );
+</script>
+ 
+
+//sibling data get using parent class
+ $(this).parent().siblings(".hiddenBox").show();
+
+
+
